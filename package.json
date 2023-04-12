@@ -1,0 +1,22 @@
+{
+  "name": "learning",
+  "version": "1.0",
+  "description": "🤍",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "npx tsc --lib ES2022,dom src/PolynomialRegression.ts",
+    "start": "node src/PolynomialRegression.js",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "build": "npx tsc --lib ES2022,dom src/PolynomialRegression.ts && npx uglify-js src/PolynomialRegression.js -o dist/PolynomialRegression.min.js"
+  },
+  "author": "Khanh Nguyen",
+  "license": "ISC",
+  "dependencies": {
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "uglify-js": "^3.17.4"
+  }
+}
