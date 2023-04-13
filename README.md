@@ -15,51 +15,48 @@ import { PolynomialRegression } from './PolynomialRegression';
 const xValues = [0, 1, 2, 3, 4];
 const yValues = [1, 2, 3, 4, 5];
 
-// Khởi tạo đối tượng PolynomialRegression
 const polynomialRegression = new PolynomialRegression();
 
-// Khớp đa thức bậc hai với dữ liệu
 const degree = 2;
+
 const coefficients = polynomialRegression.fit(xValues, yValues, degree);
 
-// Tính giá trị dự đoán cho một giá trị x mới
-const newX = 5;
-const predictedY = polynomialRegression.predict(newX, coefficients);
-
-console.log(predictedY); // 6
+console.log(coefficients);
 
 ```
 
-## API
-**fit(xValues: number[], yValues: number[], degree: number): number[]**
-Phương thức **fit** được sử dụng để khớp một đa thức bậc **degree** với dữ liệu được cung cấp bởi hai mảng **xValues**  và **yValues** . Phương thức này trả về một mảng chứa các hệ số của đa thức khớp.
-```js
-const xValues = [0, 1, 2, 3, 4];
-const yValues = [1, 2, 3, 4, 5];
-const degree = 2;
+## Logger
+```ts
+(async () => {
+  const xValues = [1, 2, 3];
+  const yValues = [1, 4, 9];
+  const order = 2;
+  const coefficients = await PolynomialRegression.polynomialRegression(
+    xValues,
+    yValues,
+    order
+  );
 
-const polynomialRegression = new PolynomialRegression();
-const coefficients = polynomialRegression.fit(xValues, yValues, degree);
+  // Kết quả của hồi quy đa thức = [0, 0, 1] với y = 1 * x^2.
+  console.log("Kết quả của hồi quy đa thức là " + coefficients);
+  PolynomialRegression.testing(coefficients);
 
-console.log(coefficients); // [1, 0, 0]
+  console.log(
+    "Giá trị x tương ứng với giá trị y bằng 16 là " +
+      PolynomialRegression.findX(
+        coefficients,
+        16,
+        1,
+        PolynomialRegression.tolerance,
+        1000
+      )
+  ); // 4
 
-```
-
-**predict(xValue: number, coefficients: number[]): number**
-Phương thức **predict** được sử dụng để tính giá trị dự đoán cho một giá trị **xValue** mới, sử dụng các hệ số của đa thức đã được tính toán trước đó. Phương thức này trả về giá trị dự đoán cho **xValue**.
-```js
-const xValues = [0, 1, 2, 3, 4];
-const yValues = [0, 2, 4, 6, 8];
-
-// Tính đa thức bậc 1
-const degree = 1;
-const coefficients = polynomialRegression(xValues, yValues, degree);
-
-// Dự đoán giá trị y cho xValue = 5
-const xValue = 5;
-const predictedY = predict(xValue, coefficients);
-
-console.log(predictedY); // Kết quả: 10
+  console.log(
+    "Giá trị y tương ứng với giá trị x bằng 4 là " +
+      PolynomialRegression.findY(coefficients, 4)
+  ); // 16
+})();
 
 ```
 

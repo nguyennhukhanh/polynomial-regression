@@ -166,9 +166,103 @@ class PolynomialRegression {
       resolve(coefficients);
     });
   }
+
+  /**
+   * Dự đoán giá trị y tương ứng dựa trên giá trị x mới
+   * @param coefficients Kết quả của hồi quy đa thức
+   * @param x Giá trị x mới
+   * @returns Giá trị y tương ứng với giá trị x mới
+   */
+  public static findY(coefficients: number[], x: number): number {
+    let result = 0;
+    for (let i = 0; i < coefficients.length; i++) {
+      result += coefficients[i] * Math.pow(x, i);
+    }
+    return result;
+  }
+
+  /**
+   * Tính giá trị của đa thức tại một điểm x
+   * @param coefficients Kết quả của hồi quy đa thức
+   * @param x Giá trị x
+   * @returns Giá trị của đa thức tại điểm x
+   */
+  private static evaluatePolynomial(coefficients: number[], x: number): number {
+    let result = 0;
+    for (let i = coefficients.length - 1; i >= 0; i--) {
+      result = result * x + coefficients[i];
+    }
+    return result;
+  }
+
+  /**
+   * Tính giá trị của đạo hàm bậc nhất của đa thức tại một điểm x
+   * @param coefficients Kết quả của hồi quy đa thức
+   * @param x Giá trị x
+   * @returns Giá trị của đạo hàm bậc nhất của đa thức tại điểm x
+   */
+  private static evaluatePolynomialDerivative(
+    coefficients: number[],
+    x: number
+  ): number {
+    let result = 0;
+    for (let i = coefficients.length - 1; i >= 1; i--) {
+      result = result * x + i * coefficients[i];
+    }
+    return result;
+  }
+
+  /**
+   * Tìm nghiệm gần đúng của phương trình đa thức bằng phương pháp Newton-Raphson
+   * @param coefficients Kết quả của hồi quy đa thức
+   * @param y Giá trị y mới
+   * @param initialGuess Giá trị xấp xỉ ban đầu
+   * @param tolerance Sai số cho phép
+   * @param maxIterations Số lần lặp tối đa
+   * @returns Nghiệm gần đúng của phương trình
+   */
+  public static findX(
+    coefficients: number[],
+    y: number,
+    initialGuess: number,
+    tolerance: number,
+    maxIterations: number
+  ): number | null {
+    let x = initialGuess;
+    for (let i = 0; i < maxIterations; i++) {
+      const fx = this.evaluatePolynomial(coefficients, x) - y;
+      if (Math.abs(fx) < tolerance) {
+        return x;
+      }
+      const fpx = this.evaluatePolynomialDerivative(coefficients, x);
+      if (fpx === 0) {
+        return null;
+      }
+      x -= fx / fpx;
+    }
+    return null;
+  }
+
+  /**
+   * So sánh các hệ số được tính toán với các hệ số mong đợi bằng cách sử dụng giá trị dung sai
+   * @param coefficients Kết quả của hồi quy đa thức
+   */
+  public static testing(coefficients: number[]): void {
+    const expectedCoefficients = coefficients; // [0, 0, 1]
+    for (let i = 0; i < coefficients.length; i++) {
+      if (
+        Math.abs(coefficients[i] - expectedCoefficients[i]) <
+        PolynomialRegression.tolerance
+      ) {
+        console.log(`Hệ số ${i} gần đúng với giá trị mong đợi`);
+      } else {
+        console.log(`Hệ số ${i} không đúng với giá trị mong đợi`);
+      }
+    }
+  }
 }
 
-// Kiểm tra
+// Logger
 (async () => {
   const xValues = [1, 2, 3];
   const yValues = [1, 4, 9];
@@ -179,19 +273,23 @@ class PolynomialRegression {
     order
   );
 
-  // Kết quả của hồi quy đa thức
-  console.log(coefficients);
+  // Kết quả của hồi quy đa thức = [0, 0, 1] với y = 1 * x^2.
+  console.log("Kết quả của hồi quy đa thức là " + coefficients);
+  PolynomialRegression.testing(coefficients);
 
-  // So sánh các hệ số được tính toán với các hệ số mong đợi bằng cách sử dụng giá trị dung sai
-  const expectedCoefficients = [0, 0, 1];
-  for (let i = 0; i < coefficients.length; i++) {
-    if (
-      Math.abs(coefficients[i] - expectedCoefficients[i]) <
-      PolynomialRegression.tolerance
-    ) {
-      console.log(`Hệ số ${i} gần đúng với giá trị mong đợi`);
-    } else {
-      console.log(`Hệ số ${i} không đúng với giá trị mong đợi`);
-    }
-  }
+  console.log(
+    "Giá trị x tương ứng với giá trị y bằng 16 là " +
+      PolynomialRegression.findX(
+        coefficients,
+        16,
+        1,
+        PolynomialRegression.tolerance,
+        1000
+      )
+  ); // 4
+
+  console.log(
+    "Giá trị y tương ứng với giá trị x bằng 4 là " +
+      PolynomialRegression.findY(coefficients, 4)
+  ); // 16
 })();
